@@ -40,7 +40,7 @@ function DrawProgressCircle(v, min, max, xPos, yPos, startdegree, innerrad, oute
     local degpertriangle = 360 / precision;
     local angle = startdegree;
 
-    --local vertices = {};
+    local vertices = {};
     local vertices2 = {};
 
     for i=1, scaled_precision do
@@ -97,7 +97,7 @@ function DrawProgressCircle(v, min, max, xPos, yPos, startdegree, innerrad, oute
             v6posX, v6posY, 0.0, 1.0
         }
 
-        local vertices = {};
+        vertices = {};
 
         vertices[#vertices+1] = v1;
         vertices[#vertices+1] = v2;
