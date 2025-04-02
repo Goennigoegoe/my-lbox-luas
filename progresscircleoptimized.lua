@@ -26,6 +26,13 @@ function DrawLineFromTable(vertices)
     end
 end
 
+local sinTable = {};
+local cosTable = {};
+for i = 0, 720 do
+    sinTable[i] = math.sin(math.rad(i * 0.5));
+    cosTable[i] = math.cos(math.rad(i * 0.5));
+end
+
 --[[
 call draw.Color before running
 ]]--
@@ -40,24 +47,47 @@ function DrawProgressCircle(v, min, max, xPos, yPos, startdegree, innerrad, oute
     local degpertriangle = 360 / precision;
     local angle = startdegree;
 
-    local vertices = {};
-    local vertices2 = {};
+    local vertices = {
+        {0.0, 0.0, 0.0, 1.0},
+        {0.0, 0.0, 0.0, 1.0},
+        {0.0, 0.0, 0.0, 1.0},
+        {0.0, 0.0, 0.0, 1.0},
+        {0.0, 0.0, 0.0, 1.0},
+        {0.0, 0.0, 0.0, 1.0},
+    };
 
     local sinf = math.sin;
     local cosf = math.cos;
     local rad = math.rad;
+    local floor = math.floor;
+
+    local drawPoly = draw.TexturedPolygon;
 
     for i=1, scaled_precision do
-        local vposX = xPos + cosf(rad(angle)) * innerrad;
+        --[[local vposX = xPos + cosf(rad(angle)) * innerrad;
         local vposY = yPos + sinf(rad(angle)) * innerrad;
 
         local v2posX = xPos + cosf(rad(angle)) * outerrad;
         local v2posY = yPos + sinf(rad(angle)) * outerrad;
 
         local v3posX = xPos + cosf(rad(angle + degpertriangle)) * innerrad;
-        local v3posY = yPos + sinf(rad(angle + degpertriangle)) * innerrad;
+        local v3posY = yPos + sinf(rad(angle + degpertriangle)) * innerrad;]]--
+        local ang = floor(2 * angle);
+        local ang_deg = floor(2 * (angle + degpertriangle));
 
-        local v1 = {
+        local cr, sr = cosTable[ang], sinTable[ang];
+        local cr_d, sr_d = cosTable[ang_deg], sinTable[ang_deg];
+
+        local vposX = xPos + cr * innerrad;
+        local vposY = yPos + sr * innerrad;
+
+        local v2posX = xPos + cr * outerrad;
+        local v2posY = yPos + sr * outerrad;
+
+        local v3posX = xPos + cr_d * innerrad;
+        local v3posY = yPos + sr_d * innerrad;
+
+        --[[local v1 = {
             vposX, vposY, 0.0, 1.0
         };
 
@@ -67,7 +97,7 @@ function DrawProgressCircle(v, min, max, xPos, yPos, startdegree, innerrad, oute
 
         local v3 = {
             v3posX, v3posY, 0.0, 1.0
-        }
+        }]]--
 
         --[[vertices[#vertices+1] = v1;
         vertices[#vertices+1] = v2;
@@ -76,8 +106,8 @@ function DrawProgressCircle(v, min, max, xPos, yPos, startdegree, innerrad, oute
         --local v4posX = xPos + cosf(rad(angle)) * outerrad;
         --local v4posY = yPos + sinf(rad(angle)) * outerrad;
 
-        local v5posX = xPos + cosf(rad(angle + degpertriangle)) * outerrad;
-        local v5posY = yPos + sinf(rad(angle + degpertriangle)) * outerrad;
+        local v5posX = xPos + cr_d * outerrad;
+        local v5posY = yPos + sr_d * outerrad;
 
         --local v6posX = xPos + cosf(rad(angle + degpertriangle)) * innerrad;
         --local v6posY = yPos + sinf(rad(angle + degpertriangle)) * innerrad;
@@ -89,7 +119,7 @@ function DrawProgressCircle(v, min, max, xPos, yPos, startdegree, innerrad, oute
         print("v5X: " .. v5posX .. " v5Y: " .. v5posY);
         print("v6X: " .. v6posX .. " v6Y: " .. v6posY);]]--
 
-        local v4 = {
+        --[[local v4 = {
             v2posX, v2posY, 0.0, 1.0
         };
 
@@ -99,18 +129,32 @@ function DrawProgressCircle(v, min, max, xPos, yPos, startdegree, innerrad, oute
 
         local v6 = {
             v3posX, v3posY, 0.0, 1.0
-        }
+        }]]--
 
-        vertices = {};
+        vertices[1][1] = vposX;
+        vertices[1][2] = vposY;
 
-        vertices[#vertices+1] = v1;
-        vertices[#vertices+1] = v2;
-        vertices[#vertices+1] = v3;
-        vertices[#vertices+1] = v4;
-        vertices[#vertices+1] = v5;
-        vertices[#vertices+1] = v6;
+        vertices[2][1] = v2posX;
+        vertices[2][2] = v2posY;
 
-        draw.TexturedPolygon(tex, vertices, true);
+        vertices[3][1] = v3posX;
+        vertices[3][2] = v3posY;
+
+        vertices[4][1] = v2posX;
+        vertices[4][2] = v2posY;
+
+        vertices[5][1] = v5posX;
+        vertices[5][2] = v5posY;
+
+        vertices[6][1] = v3posX;
+        vertices[6][2] = v3posY;
+        --[[vertices[2] = v2;
+        vertices[3] = v3;
+        vertices[4] = v4;
+        vertices[5] = v5;
+        vertices[6] = v6;]]--
+
+        drawPoly(tex, vertices, true);
 
         angle = angle + degpertriangle;
     end
@@ -192,8 +236,11 @@ callbacks.Register("Draw", function()
         { w/2 - tw/2, h/2 + th/2, 0.0, 1.0 },
     }, true )]]--
 
+    for i=1, 50 do
+        DrawProgressCircle(value, 0, 100, i*10, i*10, 0, 20, 30);
+    end
     
-    --DrawProgressCircle(value, 0, 100, 860, 540, 0, 20, 30);
+    --[[DrawProgressCircle(value, 0, 100, 860, 540, 0, 20, 30);
 
     DrawProgressCircle(value, 0, 100, 125, 100, 0, 20, 30);
 
@@ -201,7 +248,7 @@ callbacks.Register("Draw", function()
 
     DrawProgressCircle(value, 0, 100, 1500, 1000, 0, 20, 30);
 
-    DrawProgressCircle(value, 0, 100, 200, 500, 0, 20, 30);
+    DrawProgressCircle(value, 0, 100, 200, 500, 0, 20, 30);]]--
 end)
 
 callbacks.Register("Unload", function()
